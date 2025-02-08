@@ -1,129 +1,97 @@
 {
   "name": "next-typescript",
-  "version": "1.0.0",
   "description": "Next.js with TypeScript template",
+  "version": "1.0.0",
+  "type": "web-app",
+  "category": "web",
   "files": {
     "package.json": {
-      "type": "json",
-      "content": {
-        "name": "{{name}}",
-        "version": "0.1.0",
-        "private": true,
-        "scripts": {
-          "dev": "next dev",
-          "build": "next build",
-          "start": "next start",
-          "lint": "next lint"
-        },
-        "dependencies": {
-          "next": "^14.1.0",
-          "react": "^18.2.0",
-          "react-dom": "^18.2.0",
-          "typescript": "^5.3.3",
-          "@types/node": "^20.11.17",
-          "@types/react": "^18.2.55",
-          "@types/react-dom": "^18.2.19",
-          "tailwindcss": "^3.4.1",
-          "postcss": "^8.4.35",
-          "autoprefixer": "^10.4.17"
-        },
-        "devDependencies": {
-          "eslint": "^8.56.0",
-          "eslint-config-next": "^14.1.0",
-          "@typescript-eslint/eslint-plugin": "^6.21.0",
-          "@typescript-eslint/parser": "^6.21.0",
-          "prettier": "^3.2.5"
-        }
-      }
+      "type": "template",
+      "content": "templates/package.json"
     },
     "tsconfig.json": {
-      "type": "json",
-      "content": {
-        "compilerOptions": {
-          "target": "es5",
-          "lib": [
-            "dom",
-            "dom.iterable",
-            "esnext"
-          ],
-          "allowJs": true,
-          "skipLibCheck": true,
-          "strict": true,
-          "noEmit": true,
-          "esModuleInterop": true,
-          "module": "esnext",
-          "moduleResolution": "bundler",
-          "resolveJsonModule": true,
-          "isolatedModules": true,
-          "jsx": "preserve",
-          "incremental": true,
-          "plugins": [
-            {
-              "name": "next"
-            }
-          ],
-          "paths": {
-            "@/*": [
-              "./*"
-            ]
-          }
-        },
-        "include": [
-          "next-env.d.ts",
-          "**/*.ts",
-          "**/*.tsx",
-          ".next/types/**/*.ts"
-        ],
-        "exclude": [
-          "node_modules"
-        ]
-      }
+      "type": "template",
+      "content": "templates/tsconfig.json"
     },
     "next.config.js": {
-      "type": "js",
-      "content": "/** @type {import('next').NextConfig} */\nconst nextConfig = {\n  reactStrictMode: true,\n};\n\nmodule.exports = nextConfig;"
+      "type": "template",
+      "content": "templates/next.config.js"
     },
     "postcss.config.js": {
-      "type": "js",
-      "content": "module.exports = {\n  plugins: {\n    tailwindcss: {},\n    autoprefixer: {},\n  },\n};"
+      "type": "template",
+      "content": "templates/postcss.config.js"
     },
     "tailwind.config.js": {
-      "type": "js",
-      "content": "/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\n    './pages/**/*.{js,ts,jsx,tsx,mdx}',\n    './components/**/*.{js,ts,jsx,tsx,mdx}',\n  ],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n};"
+      "type": "template",
+      "content": "templates/tailwind.config.js"
     },
     ".eslintrc.json": {
-      "type": "json",
-      "content": {
-        "extends": [
-          "next/core-web-vitals",
-          "eslint:recommended",
-          "plugin:@typescript-eslint/recommended"
-        ],
-        "parser": "@typescript-eslint/parser",
-        "plugins": [
-          "@typescript-eslint"
-        ],
-        "root": true
-      }
+      "type": "template",
+      "content": "templates/.eslintrc.json"
     },
     ".prettierrc": {
-      "type": "json",
-      "content": {
-        "semi": true,
-        "trailingComma": "es5",
-        "singleQuote": true,
-        "printWidth": 100,
-        "tabWidth": 2
+      "type": "template",
+      "content": "templates/.prettierrc"
+    },
+    "pages/index.tsx": {
+      "type": "template",
+      "content": "templates/pages/index.tsx"
+    },
+    "pages/_app.tsx": {
+      "type": "template",
+      "content": "templates/pages/_app.tsx"
+    },
+    "styles/globals.css": {
+      "type": "template",
+      "content": "templates/styles/globals.css"
+    }
+  },
+  "config": {
+    "name": "next-typescript",
+    "description": "Next.js with TypeScript template",
+    "version": "1.0.0",
+    "type": "web-app",
+    "category": "web",
+    "techStack": {
+      "frontend": {
+        "framework": "next",
+        "styling": "tailwind",
+        "stateManagement": "redux"
+      },
+      "deployment": {
+        "platform": "vercel",
+        "containerization": "docker"
       }
     }
   },
-  "directories": [
-    "pages",
-    "pages/api",
-    "public",
-    "styles",
-    "components",
-    "lib",
-    "types"
-  ]
+  "compatibility": {
+    "frontend": {
+      "node": ">=18.0.0",
+      "npm": ">=8.0.0",
+      "browsers": [
+        "chrome",
+        "firefox",
+        "safari",
+        "edge"
+      ]
+    },
+    "backend": {
+      "node": ">=18.0.0",
+      "npm": ">=8.0.0"
+    },
+    "features": [
+      "typescript",
+      "tailwind",
+      "eslint",
+      "prettier"
+    ]
+  },
+  "metadata": {
+    "id": "next-typescript-template",
+    "createdAt": "2024-02-25T00:00:00.000Z",
+    "updatedAt": "2024-02-25T00:00:00.000Z",
+    "version": "1.0.0",
+    "projectId": "next-typescript",
+    "generatedBy": "ai-web-app-generator"
+  }
 }
