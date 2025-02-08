@@ -18,7 +18,7 @@ For detailed step-by-step instructions on implementing this specification, pleas
 
 1. [Generator Core Architecture](specs/generator/ARCHITECTURE.md)
    - Blueprint generation engine
-   - AI model integration (o3-mini)
+   - AI model integration (Anthropic Sonnet 3.5)
    - Template system
    - User interface system
 

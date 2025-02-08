@@ -53,19 +53,21 @@ export const BlueprintStructureSchema = z.object({
 
 // Blueprint metadata schema
 export const BlueprintMetadataSchema = z.object({
-  id: z.string().uuid(),
-  projectId: z.string().uuid(),
-  version: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  generatedBy: z.string(),
+  projectId: z.string(),
+  generatedAt: z.string(),
+  aiAnalysis: z.object({
+    content: z.string(),
+    suggestions: z.array(z.string()).optional(),
+    metadata: z.record(z.any()).optional(),
+  }),
 });
 
 // Complete blueprint schema
 export const BlueprintSchema = z.object({
   metadata: BlueprintMetadataSchema,
-  projectConfig: ProjectConfigSchema,
-  structure: BlueprintStructureSchema,
+  template: z.string(),
+  components: z.record(z.string()),
+  configuration: ProjectConfigSchema,
 });
 
 // TypeScript types derived from schemas
@@ -85,24 +87,14 @@ export const createBlueprint = (
   const now = new Date();
   return {
     metadata: {
-      id: crypto.randomUUID(),
       projectId,
-      version: '1.0.0',
-      createdAt: now,
-      updatedAt: now,
-      generatedBy,
-    },
-    projectConfig,
-    structure: {
-      components: [],
-      routes: [],
-      database: {
-        models: [],
+      generatedAt: now.toISOString(),
+      aiAnalysis: {
+        content: '',
       },
-      dependencies: {},
-      devDependencies: {},
-      scripts: {},
-      config: {},
     },
+    template: '',
+    components: {},
+    configuration: projectConfig,
   };
 }; 
