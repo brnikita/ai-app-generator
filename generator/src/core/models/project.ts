@@ -1,36 +1,101 @@
 import { z } from 'zod';
 
-// Tech stack schemas
+export type ProjectType = 'web-app' | 'api' | 'landing-page' | 'dashboard' | 'e-commerce';
+export type ProjectCategory = 'web' | 'backend';
+
+// Tech stack types
+export interface TechStack {
+  frontend: {
+    framework: 'react';
+    styling: 'tailwind';
+    stateManagement: 'redux';
+  };
+  backend: {
+    framework: 'express';
+    database: 'postgresql';
+    caching: 'redis';
+    auth: 'jwt';
+  };
+  deployment: {
+    platform: 'aws';
+    containerization: 'docker';
+    ci: 'github-actions';
+  };
+}
+
+export interface ProjectConfig {
+  type: ProjectType;
+  category: ProjectCategory;
+  name: string;
+  description: string;
+  features: ProjectFeature[];
+  techStack: TechStack;
+}
+
+export type ProjectFeature =
+  | 'authentication'
+  | 'authorization'
+  | 'database'
+  | 'api'
+  | 'file-upload'
+  | 'notifications'
+  | 'search'
+  | 'analytics'
+  | 'localization'
+  | 'payment'
+  | 'email'
+  | 'seo'
+  | 'testing'
+  | 'documentation';
+
+// Zod schemas
 export const FrontendSchema = z.object({
-  framework: z.string(),
+  framework: z.enum(['react', 'vue', 'angular', 'svelte']),
+  styling: z.enum(['tailwind', 'styled-components', 'sass', 'css-modules']),
+  stateManagement: z.enum(['redux', 'mobx', 'recoil', 'zustand']).optional(),
 });
 
 export const BackendSchema = z.object({
-  framework: z.string(),
+  framework: z.enum(['express', 'nest', 'fastify', 'koa']),
+  database: z.enum(['mongodb', 'postgresql', 'mysql', 'sqlite']),
+  caching: z.enum(['redis', 'memcached']).optional(),
+  auth: z.enum(['jwt', 'oauth', 'session']).optional(),
 });
 
 export const DeploymentSchema = z.object({
-  platform: z.string().default('vercel'),
+  platform: z.enum(['vercel', 'netlify', 'aws', 'gcp', 'azure']),
+  containerization: z.enum(['docker', 'kubernetes']).optional(),
+  ci: z.enum(['github-actions', 'gitlab-ci', 'jenkins']).optional(),
 });
 
 export const TechStackSchema = z.object({
-  frontend: FrontendSchema,
-  backend: BackendSchema,
-  deployment: DeploymentSchema,
+  frontend: FrontendSchema.optional(),
+  backend: BackendSchema.optional(),
+  deployment: DeploymentSchema.optional(),
 });
 
-// Project configuration schema
 export const ProjectConfigSchema = z.object({
-  type: z.enum(['frontend', 'backend', 'full-stack', 'infrastructure']),
+  type: z.enum(['web-app', 'api', 'landing-page', 'dashboard', 'e-commerce']),
+  category: z.enum(['web', 'backend']),
   name: z.string(),
   description: z.string(),
-  version: z.string(),
-  features: z.array(z.string()),
-  category: z.enum(['web-app', 'admin-dashboard', 'landing-page', 'e-commerce']),
+  features: z.array(z.enum([
+    'authentication',
+    'authorization',
+    'database',
+    'api',
+    'file-upload',
+    'notifications',
+    'search',
+    'analytics',
+    'localization',
+    'payment',
+    'email',
+    'seo',
+    'testing',
+    'documentation',
+  ])),
   techStack: TechStackSchema,
-  configuration: z.record(z.string(), z.record(z.string(), z.any())).optional(),
-  dependencies: z.record(z.string(), z.string()).optional(),
-  devDependencies: z.record(z.string(), z.string()).optional(),
 });
 
 // Project metadata schema
@@ -48,21 +113,21 @@ export const ProjectSchema = z.object({
   metadata: ProjectMetadataSchema,
 });
 
-// TypeScript types
-export type Frontend = z.infer<typeof FrontendSchema>;
-export type Backend = z.infer<typeof BackendSchema>;
-export type Deployment = z.infer<typeof DeploymentSchema>;
-export type TechStack = z.infer<typeof TechStackSchema>;
-export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
 export type ProjectMetadata = z.infer<typeof ProjectMetadataSchema>;
 export type Project = z.infer<typeof ProjectSchema>;
 
 // Project factory function
-export const createProject = (config: ProjectConfig): ProjectConfig => {
+export const createProject = (config: ProjectConfig): Project => {
+  const metadata: ProjectMetadata = {
+    id: Math.random().toString(36).substring(2, 15),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    version: '0.1.0',
+    generatedBy: 'ai-crm-generator',
+  };
+
   return {
-    ...config,
-    version: config.version || '0.1.0',
-    dependencies: config.dependencies || {},
-    devDependencies: config.devDependencies || {},
+    config,
+    metadata,
   };
 }; 

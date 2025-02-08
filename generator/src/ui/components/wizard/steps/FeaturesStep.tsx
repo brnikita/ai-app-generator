@@ -1,286 +1,226 @@
 import React from 'react';
-import { ProjectConfig } from '../../../../core/models/project';
+import { ProjectConfig, ProjectFeature } from '../../../../core/models/project';
 
 interface FeaturesStepProps {
   config: Partial<ProjectConfig>;
   onUpdateConfig: (updates: Partial<ProjectConfig>) => void;
 }
 
-type Feature = {
-  id: string;
+interface FeatureOption {
+  id: ProjectFeature;
   title: string;
   description: string;
   icon: string;
   category: 'core' | 'auth' | 'data' | 'ui' | 'api' | 'deployment';
-  dependencies?: string[];
-  incompatibleWith?: string[];
-};
+  requires?: ProjectFeature[];
+  incompatibleWith?: ProjectFeature[];
+}
 
-const FEATURES: Feature[] = [
-  // Core Features
+const FEATURES: FeatureOption[] = [
   {
-    id: 'routing',
-    title: 'Dynamic Routing',
-    description: 'Client-side routing with page transitions',
-    icon: '🔀',
+    id: 'authentication',
+    title: 'Authentication',
+    description: 'User authentication with multiple providers',
+    icon: '🔐',
+    category: 'auth',
+  },
+  {
+    id: 'authorization',
+    title: 'Authorization',
+    description: 'Role-based access control and permissions',
+    icon: '🛡️',
+    category: 'auth',
+    requires: ['authentication'],
+  },
+  {
+    id: 'database',
+    title: 'Database Integration',
+    description: 'Data persistence with your chosen database',
+    icon: '💾',
+    category: 'data',
+  },
+  {
+    id: 'api',
+    title: 'API Integration',
+    description: 'RESTful or GraphQL API endpoints',
+    icon: '🔌',
+    category: 'api',
+  },
+  {
+    id: 'file-upload',
+    title: 'File Upload',
+    description: 'File upload and storage capabilities',
+    icon: '📁',
+    category: 'core',
+  },
+  {
+    id: 'notifications',
+    title: 'Notifications',
+    description: 'Real-time notifications and alerts',
+    icon: '🔔',
+    category: 'ui',
+    requires: ['authentication'],
+  },
+  {
+    id: 'search',
+    title: 'Search',
+    description: 'Full-text search functionality',
+    icon: '🔍',
+    category: 'core',
+  },
+  {
+    id: 'analytics',
+    title: 'Analytics',
+    description: 'User behavior tracking and analytics',
+    icon: '📊',
+    category: 'core',
+  },
+  {
+    id: 'localization',
+    title: 'Localization',
+    description: 'Multi-language support',
+    icon: '🌍',
+    category: 'ui',
+  },
+  {
+    id: 'payment',
+    title: 'Payment Integration',
+    description: 'Payment processing capabilities',
+    icon: '💳',
+    category: 'core',
+    requires: ['authentication'],
+  },
+  {
+    id: 'email',
+    title: 'Email Service',
+    description: 'Email notifications and templates',
+    icon: '📧',
     category: 'core',
   },
   {
     id: 'seo',
     title: 'SEO Optimization',
-    description: 'Meta tags, sitemaps, and robots.txt',
-    icon: '🔍',
+    description: 'Search engine optimization features',
+    icon: '🎯',
     category: 'core',
   },
-  
-  // Authentication Features
   {
-    id: 'authentication',
-    title: 'Authentication',
-    description: 'User authentication and authorization',
-    icon: '🔐',
-    category: 'auth',
-    dependencies: ['user-management'],
-  },
-  {
-    id: 'oauth',
-    title: 'OAuth Integration',
-    description: 'Social login with popular providers',
-    icon: '🔑',
-    category: 'auth',
-    dependencies: ['authentication'],
-  },
-  {
-    id: 'mfa',
-    title: 'Multi-Factor Auth',
-    description: 'Two-factor authentication support',
-    icon: '🛡️',
-    category: 'auth',
-    dependencies: ['authentication'],
-  },
-  
-  // Data Features
-  {
-    id: 'database',
-    title: 'Database Integration',
-    description: 'Data persistence with ORM',
-    icon: '💾',
-    category: 'data',
-  },
-  {
-    id: 'caching',
-    title: 'Caching',
-    description: 'Performance optimization with caching',
-    icon: '⚡',
-    category: 'data',
-  },
-  {
-    id: 'search',
-    title: 'Search',
-    description: 'Full-text search capabilities',
-    icon: '🔎',
-    category: 'data',
-    dependencies: ['database'],
-  },
-  
-  // UI Features
-  {
-    id: 'responsive',
-    title: 'Responsive Design',
-    description: 'Mobile-first responsive layouts',
-    icon: '📱',
-    category: 'ui',
-  },
-  {
-    id: 'dark-mode',
-    title: 'Dark Mode',
-    description: 'Theme switching support',
-    icon: '🌙',
-    category: 'ui',
-  },
-  {
-    id: 'i18n',
-    title: 'Internationalization',
-    description: 'Multi-language support',
-    icon: '🌍',
-    category: 'ui',
-  },
-  
-  // API Features
-  {
-    id: 'rest-api',
-    title: 'REST API',
-    description: 'RESTful API endpoints',
-    icon: '🔌',
-    category: 'api',
-    incompatibleWith: ['graphql-api'],
-  },
-  {
-    id: 'graphql-api',
-    title: 'GraphQL API',
-    description: 'GraphQL schema and resolvers',
-    icon: '📊',
-    category: 'api',
-    incompatibleWith: ['rest-api'],
-  },
-  {
-    id: 'websockets',
-    title: 'WebSockets',
-    description: 'Real-time communication',
-    icon: '🔄',
-    category: 'api',
-  },
-  
-  // Deployment Features
-  {
-    id: 'docker',
-    title: 'Docker',
-    description: 'Containerized deployment',
-    icon: '🐳',
+    id: 'testing',
+    title: 'Testing Setup',
+    description: 'Unit and integration testing configuration',
+    icon: '🧪',
     category: 'deployment',
   },
   {
-    id: 'ci-cd',
-    title: 'CI/CD',
-    description: 'Automated deployment pipeline',
-    icon: '🚀',
-    category: 'deployment',
-  },
-  {
-    id: 'monitoring',
-    title: 'Monitoring',
-    description: 'Performance and error tracking',
-    icon: '📈',
+    id: 'documentation',
+    title: 'Documentation',
+    description: 'API and code documentation setup',
+    icon: '📚',
     category: 'deployment',
   },
 ];
 
 const CATEGORIES = [
-  { id: 'core', title: 'Core Features', icon: '⚙️' },
-  { id: 'auth', title: 'Authentication', icon: '🔐' },
-  { id: 'data', title: 'Data Management', icon: '💾' },
-  { id: 'ui', title: 'User Interface', icon: '🎨' },
-  { id: 'api', title: 'API & Integration', icon: '🔌' },
-  { id: 'deployment', title: 'Deployment', icon: '🚀' },
-];
+  { id: 'core', title: 'Core Features' },
+  { id: 'auth', title: 'Authentication & Authorization' },
+  { id: 'data', title: 'Data Management' },
+  { id: 'ui', title: 'User Interface' },
+  { id: 'api', title: 'API & Integration' },
+  { id: 'deployment', title: 'Deployment & Testing' },
+] as const;
 
 export const FeaturesStep: React.FC<FeaturesStepProps> = ({ config, onUpdateConfig }) => {
   const selectedFeatures = config.features || [];
 
-  const handleFeatureToggle = (featureId: string) => {
-    const feature = FEATURES.find(f => f.id === featureId);
-    if (!feature) return;
+  const isFeatureDisabled = (feature: FeatureOption): boolean => {
+    if (!feature.requires?.length) return false;
+    return !feature.requires.every(req => selectedFeatures.includes(req));
+  };
 
-    let newFeatures: string[];
-    if (selectedFeatures.includes(featureId)) {
-      // Remove feature and its dependents
-      const dependents = FEATURES.filter(f => 
-        f.dependencies?.includes(featureId)
-      ).map(f => f.id);
-      newFeatures = selectedFeatures.filter(f => 
-        f !== featureId && !dependents.includes(f)
-      );
-    } else {
-      // Add feature and its dependencies
-      const dependencies = feature.dependencies || [];
-      newFeatures = [...new Set([...selectedFeatures, featureId, ...dependencies])];
-      
-      // Remove incompatible features
-      if (feature.incompatibleWith) {
-        newFeatures = newFeatures.filter(f => !feature.incompatibleWith?.includes(f));
-      }
-    }
+  const isFeatureIncompatible = (feature: FeatureOption): boolean => {
+    if (!feature.incompatibleWith?.length) return false;
+    return feature.incompatibleWith.some(incomp => selectedFeatures.includes(incomp));
+  };
+
+  const handleFeatureToggle = (featureId: ProjectFeature) => {
+    const newFeatures = selectedFeatures.includes(featureId)
+      ? selectedFeatures.filter(f => f !== featureId)
+      : [...selectedFeatures, featureId];
 
     onUpdateConfig({ features: newFeatures });
   };
 
-  const isFeatureDisabled = (feature: Feature): boolean => {
-    if (!feature.dependencies) return false;
-    return !feature.dependencies.every(dep => selectedFeatures.includes(dep));
-  };
+  const renderFeature = (feature: FeatureOption) => {
+    const isSelected = selectedFeatures.includes(feature.id);
+    const isDisabled = isFeatureDisabled(feature);
+    const isIncompatible = isFeatureIncompatible(feature);
 
-  const isFeatureIncompatible = (feature: Feature): boolean => {
-    if (!feature.incompatibleWith) return false;
-    return feature.incompatibleWith.some(f => selectedFeatures.includes(f));
+    return (
+      <button
+        key={feature.id}
+        onClick={() => !isDisabled && !isIncompatible && handleFeatureToggle(feature.id)}
+        disabled={isDisabled || isIncompatible}
+        className={`relative rounded-lg border ${
+          isSelected
+            ? 'border-blue-500 ring-2 ring-blue-500'
+            : isDisabled || isIncompatible
+            ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+            : 'border-gray-300 hover:border-gray-400'
+        } bg-white p-4 shadow-sm focus:outline-none w-full text-left`}
+      >
+        <div className="flex items-center space-x-3">
+          <div className="flex-shrink-0 text-xl">{feature.icon}</div>
+          <div className="min-w-0 flex-1">
+            <p
+              className={`text-sm font-medium ${
+                isSelected ? 'text-blue-600' : 'text-gray-900'
+              }`}
+            >
+              {feature.title}
+            </p>
+            <p className="mt-1 text-sm text-gray-500">{feature.description}</p>
+            {isDisabled && feature.requires && (
+              <p className="mt-1 text-xs text-red-500">
+                Requires: {feature.requires.join(', ')}
+              </p>
+            )}
+          </div>
+          {isSelected && (
+            <div className="flex-shrink-0">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100">
+                <svg className="h-4 w-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+          )}
+        </div>
+      </button>
+    );
   };
 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-lg font-medium text-gray-900">Project Features</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Select the features you want to include in your project. Some features may have dependencies
-          or be incompatible with others.
+        <h2 className="text-2xl font-bold text-gray-900">Choose Features</h2>
+        <p className="mt-2 text-gray-600">
+          Select the features you want to include in your project. Some features may require others to
+          be selected first.
         </p>
       </div>
 
-      {CATEGORIES.map(category => {
-        const categoryFeatures = FEATURES.filter(f => f.category === category.id);
-        
-        return (
-          <div key={category.id} className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-xl">{category.icon}</span>
-              <h3 className="text-lg font-medium text-gray-900">{category.title}</h3>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {categoryFeatures.map(feature => {
-                const isSelected = selectedFeatures.includes(feature.id);
-                const isDisabled = isFeatureDisabled(feature);
-                const isIncompatible = isFeatureIncompatible(feature);
-
-                return (
-                  <button
-                    key={feature.id}
-                    onClick={() => handleFeatureToggle(feature.id)}
-                    disabled={isDisabled || isIncompatible}
-                    className={`p-4 rounded-lg border-2 text-left transition-colors ${
-                      isSelected
-                        ? 'border-blue-500 bg-blue-50'
-                        : isDisabled || isIncompatible
-                        ? 'border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed'
-                        : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50'
-                    }`}
-                  >
-                    <div className="flex items-start space-x-4">
-                      <div className="text-2xl">{feature.icon}</div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">{feature.title}</h4>
-                        <p className="mt-1 text-sm text-gray-500">{feature.description}</p>
-                        {(feature.dependencies || feature.incompatibleWith) && (
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {feature.dependencies?.map(dep => (
-                              <span
-                                key={dep}
-                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                  selectedFeatures.includes(dep)
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-yellow-100 text-yellow-800'
-                                }`}
-                              >
-                                Requires: {dep}
-                              </span>
-                            ))}
-                            {feature.incompatibleWith?.map(inc => (
-                              <span
-                                key={inc}
-                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800"
-                              >
-                                Conflicts: {inc}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+      {CATEGORIES.map(category => (
+        <div key={category.id} className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-900">{category.title}</h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {FEATURES.filter(feature => feature.category === category.id).map(renderFeature)}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }; 

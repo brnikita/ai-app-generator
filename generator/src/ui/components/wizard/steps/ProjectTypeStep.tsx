@@ -6,54 +6,57 @@ interface ProjectTypeStepProps {
   onUpdateConfig: (updates: Partial<ProjectConfig>) => void;
 }
 
-type ProjectType = {
-  type: ProjectConfig['type'];
-  category: ProjectConfig['category'];
+type ProjectType = 'web-app' | 'api' | 'landing-page' | 'dashboard' | 'e-commerce';
+type ProjectCategory = 'web' | 'backend';
+
+interface ProjectTypeOption {
+  id: ProjectType;
   title: string;
   description: string;
   icon: string;
-};
+  category: ProjectCategory;
+}
 
-const PROJECT_TYPES: ProjectType[] = [
+const PROJECT_TYPES: ProjectTypeOption[] = [
   {
-    type: 'frontend',
-    category: 'web-app',
+    id: 'web-app',
     title: 'Web Application',
-    description: 'A modern web application with interactive UI',
+    description: 'Create a modern web application with a responsive UI',
     icon: '🌐',
+    category: 'web',
   },
   {
-    type: 'frontend',
-    category: 'admin-dashboard',
+    id: 'api',
+    title: 'API Service',
+    description: 'Build a robust REST or GraphQL API service',
+    icon: '⚡',
+    category: 'backend',
+  },
+  {
+    id: 'landing-page',
+    title: 'Landing Page',
+    description: 'Design a high-converting landing page with modern UI/UX',
+    icon: '🎯',
+    category: 'web',
+  },
+  {
+    id: 'dashboard',
     title: 'Admin Dashboard',
-    description: 'A comprehensive admin interface for managing data',
+    description: 'Create a powerful admin dashboard with data visualization',
     icon: '📊',
+    category: 'web',
   },
   {
-    type: 'backend',
-    category: 'web-app',
-    title: 'Backend API',
-    description: 'A robust REST or GraphQL API service',
-    icon: '⚙️',
-  },
-  {
-    type: 'full-stack',
-    category: 'web-app',
-    title: 'Full-Stack Application',
-    description: 'A complete web application with frontend and backend',
-    icon: '🚀',
-  },
-  {
-    type: 'full-stack',
-    category: 'e-commerce',
-    title: 'E-Commerce Platform',
-    description: 'A full-featured online store application',
+    id: 'e-commerce',
+    title: 'E-commerce Platform',
+    description: 'Build a scalable e-commerce platform with payment integration',
     icon: '🛍️',
+    category: 'web',
   },
-];
+] as const;
 
 export const ProjectTypeStep: React.FC<ProjectTypeStepProps> = ({ config, onUpdateConfig }) => {
-  const handleTypeSelect = (type: ProjectConfig['type'], category: ProjectConfig['category']) => {
+  const handleTypeSelect = (type: ProjectType, category: ProjectCategory) => {
     onUpdateConfig({ type, category });
   };
 
@@ -63,6 +66,61 @@ export const ProjectTypeStep: React.FC<ProjectTypeStepProps> = ({ config, onUpda
 
   return (
     <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">Choose Project Type</h2>
+        <p className="mt-2 text-gray-600">
+          Select the type of project you want to create. This will determine the available features and
+          tech stack options.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {PROJECT_TYPES.map(({ id, title, description, icon, category }) => (
+          <button
+            key={id}
+            onClick={() => handleTypeSelect(id, category)}
+            className={`relative rounded-lg border ${
+              config.type === id
+                ? 'border-blue-500 ring-2 ring-blue-500'
+                : 'border-gray-300 hover:border-gray-400'
+            } bg-white p-6 shadow-sm focus:outline-none`}
+          >
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 text-2xl">{icon}</div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <p
+                    className={`text-sm font-medium ${
+                      config.type === id ? 'text-blue-600' : 'text-gray-900'
+                    }`}
+                  >
+                    {title}
+                  </p>
+                </div>
+                <p className="mt-1 text-sm text-gray-500">{description}</p>
+              </div>
+            </div>
+            {config.type === id && (
+              <div className="absolute top-2 right-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100">
+                  <svg
+                    className="h-4 w-4 text-blue-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+
       {/* Project Details */}
       <div className="space-y-6">
         <h2 className="text-lg font-medium text-gray-900">Project Details</h2>
@@ -109,32 +167,6 @@ export const ProjectTypeStep: React.FC<ProjectTypeStepProps> = ({ config, onUpda
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             placeholder="Describe your project..."
           />
-        </div>
-      </div>
-
-      {/* Project Type Selection */}
-      <div className="space-y-6">
-        <h2 className="text-lg font-medium text-gray-900">Project Type</h2>
-        <div className="grid grid-cols-2 gap-4">
-          {PROJECT_TYPES.map(({ type, category, title, description, icon }) => (
-            <button
-              key={`${type}-${category}`}
-              onClick={() => handleTypeSelect(type, category)}
-              className={`p-4 rounded-lg border-2 text-left transition-colors ${
-                config.type === type && config.category === category
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50'
-              }`}
-            >
-              <div className="flex items-start space-x-4">
-                <div className="text-2xl">{icon}</div>
-                <div>
-                  <h3 className="font-medium text-gray-900">{title}</h3>
-                  <p className="mt-1 text-sm text-gray-500">{description}</p>
-                </div>
-              </div>
-            </button>
-          ))}
         </div>
       </div>
     </div>
