@@ -50,8 +50,8 @@ interface AIFunction {
 }
 
 interface AIModelParams {
-  model: 'gpt-4' | 'gpt-4-1106-preview';
-  temperature: 0.2;
+  model: 'claude-3-sonnet-20240229';
+  temperature: 0.7;
   maxTokens: 4096;
   topP: 1;
   frequencyPenalty: 0;
@@ -76,7 +76,7 @@ interface RAGConfig {
     className: string;
   };
   embedding: {
-    model: 'text-embedding-ada-002';
+    model: 'claude-3-sonnet-20240229';
     dimensions: 1536;
   };
   retrieval: {

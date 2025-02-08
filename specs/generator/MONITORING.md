@@ -88,6 +88,10 @@ interface SystemPerformance {
     queueLength: Gauge;
     batchSize: Histogram;
     utilizationRate: Gauge;
+    contextLength: Histogram;
+    tokenUsage: Counter;
+    modelVersion: 'claude-3-sonnet-20240229';
+    temperatureDistribution: Histogram;
   };
 
   // Database Performance
