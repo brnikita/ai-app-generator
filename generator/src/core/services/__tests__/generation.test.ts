@@ -1,6 +1,7 @@
 import { GenerationService } from '../generation';
 import { createProject, type Project, type ProjectConfig } from '../../models/project';
 import { createTemplate, type Template, type TemplateConfig } from '../../models/template';
+import { type Blueprint } from '../../models/blueprint';
 
 describe('GenerationService', () => {
   let service: GenerationService;
@@ -103,7 +104,7 @@ describe('GenerationService', () => {
     });
 
     it('should generate a blueprint for a valid project', async () => {
-      const blueprint = await service.generateBlueprint(mockProject);
+      const blueprint = await service.generateBlueprint(mockProject) as Blueprint;
       expect(blueprint).toBeDefined();
       expect(blueprint.metadata.projectId).toBe(mockProject.metadata.id);
       expect(blueprint.projectConfig).toEqual(mockProject.config);

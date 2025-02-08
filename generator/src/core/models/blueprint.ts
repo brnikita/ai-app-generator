@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ProjectConfig } from './project';
+import { ProjectConfigSchema } from './project';
 
 // Component schema
 export const ComponentSchema = z.object({
@@ -64,7 +64,7 @@ export const BlueprintMetadataSchema = z.object({
 // Complete blueprint schema
 export const BlueprintSchema = z.object({
   metadata: BlueprintMetadataSchema,
-  projectConfig: ProjectConfig,
+  projectConfig: ProjectConfigSchema,
   structure: BlueprintStructureSchema,
 });
 
@@ -79,7 +79,7 @@ export type Blueprint = z.infer<typeof BlueprintSchema>;
 // Blueprint factory function
 export const createBlueprint = (
   projectId: string,
-  projectConfig: ProjectConfig,
+  projectConfig: z.infer<typeof ProjectConfigSchema>,
   generatedBy: string
 ): Blueprint => {
   const now = new Date();

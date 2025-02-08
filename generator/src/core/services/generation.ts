@@ -1,55 +1,90 @@
-import { ProjectConfig, ProjectSchema, type Project } from '../models/project';
+import { ProjectConfigSchema, ProjectSchema, type Project } from '../models/project';
 import { Template, TemplateSchema } from '../models/template';
 import { Blueprint, BlueprintSchema, createBlueprint } from '../models/blueprint';
+import { TemplateLoader } from './template-loader';
+import { z } from 'zod';
 
 export class GenerationService {
   private templates: Map<string, Template>;
+  private templateLoader: TemplateLoader;
 
-  constructor() {
+  constructor(templatesDir: string) {
     this.templates = new Map();
+    this.templateLoader = new TemplateLoader(templatesDir);
   }
 
-  // Register a template for use in generation
+  /**
+   * Initialize the service by loading all templates
+   */
+  async initialize(): Promise<void> {
+    const templates = await this.templateLoader.loadAllTemplates();
+    for (const template of templates) {
+      await this.registerTemplate(template);
+    }
+  }
+
+  /**
+   * Register a template for use in generation
+   */
   async registerTemplate(template: Template): Promise<void> {
     // Validate template
     TemplateSchema.parse(template);
     this.templates.set(template.config.name, template);
   }
 
-  // Get a registered template by name
+  /**
+   * Get a registered template by name
+   */
   async getTemplate(name: string): Promise<Template | undefined> {
-    return this.templates.get(name);
+    // Check in-memory cache first
+    const cached = this.templates.get(name);
+    if (cached) {
+      return cached;
+    }
+
+    // Try loading from filesystem
+    if (await this.templateLoader.templateExists(name)) {
+      const template = await this.templateLoader.loadTemplate(name);
+      await this.registerTemplate(template);
+      return template;
+    }
+
+    return undefined;
   }
 
-  // Generate a blueprint from project configuration
+  /**
+   * Generate a blueprint from project configuration
+   */
   async generateBlueprint(project: Project): Promise<Blueprint> {
     // Validate project
-    ProjectSchema.parse(project);
+    const validatedProject = ProjectSchema.parse(project);
 
     // Select appropriate template based on project type
-    const template = await this.selectTemplate(project.config);
+    const template = await this.selectTemplate(validatedProject.config);
     if (!template) {
-      throw new Error(`No suitable template found for project type: ${project.config.type}`);
+      throw new Error(`No suitable template found for project type: ${validatedProject.config.type}`);
     }
 
     // Create initial blueprint
     const blueprint = createBlueprint(
-      project.metadata.id,
-      project.config,
+      validatedProject.metadata.id,
+      validatedProject.config,
       'generator'
     );
 
     // Validate blueprint
-    BlueprintSchema.parse(blueprint);
+    const validatedBlueprint = BlueprintSchema.parse(blueprint);
 
     // Apply template to blueprint
-    await this.applyTemplate(blueprint, template);
+    await this.applyTemplate(validatedBlueprint, template);
 
-    return blueprint;
+    return validatedBlueprint;
   }
 
-  // Select the most appropriate template for the project
-  private async selectTemplate(config: ProjectConfig): Promise<Template | undefined> {
+  /**
+   * Select the most appropriate template for the project
+   */
+  private async selectTemplate(config: z.infer<typeof ProjectConfigSchema>): Promise<Template | undefined> {
     // Find template matching project type and tech stack
     for (const template of this.templates.values()) {
       if (
@@ -62,16 +97,22 @@ export class GenerationService {
     return undefined;
   }
 
-  // Check if template is compatible with project configuration
-  private isTemplateCompatible(template: Template, config: ProjectConfig): boolean {
+  /**
+   * Check if template is compatible with project configuration
+   */
+  private isTemplateCompatible(
+    template: Template,
+    config: z.infer<typeof ProjectConfigSchema>
+  ): boolean {
     const { techStack } = template.config;
 
     // Check frontend compatibility
     if (techStack.frontend && config.techStack.frontend) {
       if (
-        !techStack.frontend.framework.includes(config.techStack.frontend.framework) ||
+        techStack.frontend.framework !== config.techStack.frontend.framework ||
         !techStack.frontend.styling.includes(config.techStack.frontend.styling) ||
-        !techStack.frontend.stateManagement.includes(config.techStack.frontend.stateManagement)
+        (config.techStack.frontend.stateManagement !== 'none' &&
+          !techStack.frontend.stateManagement.includes(config.techStack.frontend.stateManagement))
       ) {
         return false;
       }
@@ -82,7 +123,8 @@ export class GenerationService {
       if (
         !techStack.backend.framework.includes(config.techStack.backend.framework) ||
         !techStack.backend.database.includes(config.techStack.backend.database) ||
-        !techStack.backend.authentication.includes(config.techStack.backend.authentication)
+        (config.techStack.backend.authentication !== 'none' &&
+          !techStack.backend.authentication.includes(config.techStack.backend.authentication))
       ) {
         return false;
       }
@@ -92,7 +134,9 @@ export class GenerationService {
     return techStack.deployment.platforms.includes(config.techStack.deployment.platform);
   }
 
-  // Apply template to blueprint
+  /**
+   * Apply template to blueprint
+   */
   private async applyTemplate(blueprint: Blueprint, template: Template): Promise<void> {
     // Execute pre-generation hooks
     if (template.structure.hooks?.preGeneration) {
@@ -116,6 +160,12 @@ export class GenerationService {
       } else {
         // Process file template
         if (file.template) {
+          // Load template content
+          const templateContent = await this.templateLoader.loadTemplateFile(
+            template.config.name,
+            file.path
+          );
+
           const variables = {
             ...file.variables,
             projectName: blueprint.projectConfig.name,
@@ -127,7 +177,7 @@ export class GenerationService {
             type: this.determineComponentType(file.path),
             path: file.path,
             dependencies: [],
-            template: file.template,
+            template: templateContent,
             variables,
           });
         }
@@ -145,13 +195,17 @@ export class GenerationService {
     BlueprintSchema.parse(blueprint);
   }
 
-  // Execute a template hook
+  /**
+   * Execute a template hook
+   */
   private async executeHook(hook: string, blueprint: Blueprint): Promise<void> {
     // Hook implementation will be added later
     console.log(`Executing hook: ${hook}`);
   }
 
-  // Determine component type based on file path
+  /**
+   * Determine component type based on file path
+   */
   private determineComponentType(path: string): 'page' | 'component' | 'layout' | 'api' | 'model' | 'service' {
     if (path.startsWith('pages/')) return 'page';
     if (path.startsWith('components/')) return 'component';
