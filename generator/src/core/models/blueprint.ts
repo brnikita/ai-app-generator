@@ -51,15 +51,18 @@ export const BlueprintStructureSchema = z.object({
   config: z.record(z.any()),
 });
 
+// AI analysis schema
+export const AIAnalysisSchema = z.object({
+  content: z.string(),
+  suggestions: z.array(z.string()).optional(),
+  metadata: z.record(z.any()).optional(),
+});
+
 // Blueprint metadata schema
 export const BlueprintMetadataSchema = z.object({
   projectId: z.string(),
   generatedAt: z.string(),
-  aiAnalysis: z.object({
-    content: z.string(),
-    suggestions: z.array(z.string()).optional(),
-    metadata: z.record(z.any()).optional(),
-  }),
+  aiAnalysis: AIAnalysisSchema,
 });
 
 // Complete blueprint schema
@@ -68,6 +71,7 @@ export const BlueprintSchema = z.object({
   template: z.string(),
   components: z.record(z.string()),
   configuration: ProjectConfigSchema,
+  aiAnalysis: AIAnalysisSchema,
 });
 
 // TypeScript types derived from schemas
@@ -76,25 +80,25 @@ export type Route = z.infer<typeof RouteSchema>;
 export type Database = z.infer<typeof DatabaseSchema>;
 export type BlueprintStructure = z.infer<typeof BlueprintStructureSchema>;
 export type BlueprintMetadata = z.infer<typeof BlueprintMetadataSchema>;
+export type AIAnalysis = z.infer<typeof AIAnalysisSchema>;
 export type Blueprint = z.infer<typeof BlueprintSchema>;
 
 // Blueprint factory function
 export const createBlueprint = (
   projectId: string,
   projectConfig: z.infer<typeof ProjectConfigSchema>,
-  generatedBy: string
+  aiAnalysis: AIAnalysis
 ): Blueprint => {
   const now = new Date();
   return {
     metadata: {
       projectId,
       generatedAt: now.toISOString(),
-      aiAnalysis: {
-        content: '',
-      },
+      aiAnalysis,
     },
     template: '',
     components: {},
     configuration: projectConfig,
+    aiAnalysis,
   };
 }; 
