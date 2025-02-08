@@ -1,1 +1,26 @@
- 
+{
+  "name": "ai-crm",
+  "version": "1.0.0",
+  "description": "This project consists of two main components:\r 1. Generator Platform - The application that creates web applications\r 2. Generated Applications - The web applications produced by the generator",
+  "main": "jest.config.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^22.13.1",
+    "typescript": "^5.7.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5"
+  }
+}
