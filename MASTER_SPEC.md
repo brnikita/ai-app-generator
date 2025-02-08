@@ -6,6 +6,10 @@ This master specification serves as the root document for the complete technical
 1. Generator Platform - The application that creates web applications
 2. Generated Applications - The web applications produced by the generator
 
+## Development Plan
+
+For detailed step-by-step instructions on implementing this specification, please refer to the [Development Plan](specs/DEVELOPMENT_PLAN.md).
+
 ## Part 1: Generator Platform Specifications
 
 1. [Generator Core Architecture](specs/generator/ARCHITECTURE.md)
