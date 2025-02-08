@@ -24,6 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^22.13.1",
+    "cors": "^2.8.5",
     "next": "^14.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -32,6 +33,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/jest": "^29.5.14",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",

@@ -15,7 +15,7 @@ export class AIService {
   private apiKey: string;
   private baseUrl: string;
 
-  constructor(apiKey: string, baseUrl: string = 'https://api.anthropic.com/v1') {
+  constructor(apiKey: string, baseUrl: string = '/api') {
     this.apiKey = apiKey;
     this.baseUrl = baseUrl;
   }
@@ -24,72 +24,26 @@ export class AIService {
    * Generate project configuration from text description
    */
   async generateProjectConfig(description: string): Promise<ProjectConfig> {
-    const prompt = `
-      Generate a web application project configuration based on the following description:
-      ${description}
+    try {
+      const response = await fetch(`${this.baseUrl}/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ description }),
+        credentials: 'include',
+      });
 
-      The configuration should include:
-      1. Project type and category
-      2. Required features
-      3. Project name and description
-      4. Tech stack (using our standardized stack):
-         - Frontend: Next.js, React, TypeScript, Tailwind CSS, Redux
-         - Backend: Node.js, Express, PostgreSQL, Redis
-         - Deployment: AWS, Docker, GitHub Actions
-
-      The response should be a valid JSON object matching this TypeScript interface:
-
-      interface ProjectConfig {
-        type: 'web-app' | 'api' | 'landing-page' | 'dashboard' | 'e-commerce';
-        category: 'web' | 'backend';
-        name: string;
-        description: string;
-        features: Array<
-          | 'authentication'
-          | 'authorization'
-          | 'database'
-          | 'api'
-          | 'file-upload'
-          | 'notifications'
-          | 'search'
-          | 'analytics'
-          | 'localization'
-          | 'payment'
-          | 'email'
-          | 'seo'
-          | 'testing'
-          | 'documentation'
-        >;
-        techStack: {
-          frontend: {
-            framework: 'react';
-            styling: 'tailwind';
-            stateManagement: 'redux';
-          };
-          backend: {
-            framework: 'express';
-            database: 'postgresql';
-            caching: 'redis';
-            auth: 'jwt';
-          };
-          deployment: {
-            platform: 'aws';
-            containerization: 'docker';
-            ci: 'github-actions';
-          };
-        };
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to generate project configuration');
       }
 
-      Please ensure the response is a valid JSON object that exactly matches this interface.
-    `;
-
-    const response = await this.makeAIRequest(prompt);
-    try {
-      const config = JSON.parse(response.content);
-      return ProjectConfigSchema.parse(config);
+      const data = await response.json();
+      return data;
     } catch (error) {
-      console.error('Failed to parse AI response:', error);
-      throw new Error('Failed to generate valid project configuration');
+      console.error('AI Service error:', error);
+      throw error;
     }
   }
 
@@ -251,4 +205,4 @@ export class AIService {
       throw new Error('Failed to process AI request');
     }
   }
-} 
+}
