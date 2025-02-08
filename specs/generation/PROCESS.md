@@ -2,154 +2,82 @@
 
 ## Overview
 
-This document specifies the complete generation process for creating web applications, including blueprint generation, code generation pipeline, and template system architecture.
+This document specifies the complete generation process for creating web applications. The process is designed to transform user requirements into fully functional, production-ready web applications through a series of well-defined steps.
 
 ## 1. Blueprint Generation
 
+The blueprint generation phase is responsible for converting user requirements into a detailed technical specification that will guide the application generation process.
+
 ### 1.1 Input Processing
 
-```typescript
-interface UserInput {
-  projectName: string;
-  description: string;
-  features: Feature[];
-  styling: StylingPreferences;
-  deployment: DeploymentPreferences;
-}
+The system begins by collecting and processing user input through an intuitive interface. Users can specify:
 
-interface Feature {
-  name: string;
-  type: FeatureType;
-  configuration: Record<string, unknown>;
-  dependencies: string[];
-}
+- Project details (name, description)
+- Required features and functionality
+- Styling preferences
+- Deployment requirements
 
-enum FeatureType {
-  AUTH = 'auth',
-  DATABASE = 'database',
-  API = 'api',
-  UI = 'ui',
-  INTEGRATION = 'integration'
-}
-```
+The input processing system validates all user inputs in real-time, providing immediate feedback and suggestions for improvement.
 
-### 1.2 AI Model Integration
+### 1.2 AI Model Integration (Claude 3.5 Sonnet)
 
-```typescript
-interface AIPromptTemplate {
-  system: string;
-  user: string;
-  assistant?: string;
-  functions?: AIFunction[];
-}
+The AI model integration leverages Claude 3.5 Sonnet to:
 
-interface AIFunction {
-  name: string;
-  description: string;
-  parameters: JSONSchema;
-}
+1. Analyze user requirements and generate optimal application blueprints
+2. Validate technical decisions and architectural choices
+3. Optimize generated code for performance and maintainability
+4. Provide intelligent suggestions and alternatives
 
-interface AIModelParams {
-  model: 'claude-3-sonnet-20240229';
-  temperature: 0.7;
-  maxTokens: 4096;
-  topP: 1;
-  frequencyPenalty: 0;
-  presencePenalty: 0;
-}
+The model is configured for:
+- Balanced creativity and precision (temperature: 0.7)
+- Comprehensive context understanding (max tokens: 4096)
+- High-quality output generation
 
-class AIModelService {
-  async generateBlueprint(input: UserInput): Promise<Blueprint>;
-  async validateBlueprint(blueprint: Blueprint): Promise<ValidationResult>;
-  async optimizeBlueprint(blueprint: Blueprint): Promise<Blueprint>;
-}
-```
+### 1.3 Retrieval-Augmented Generation (RAG)
 
-### 1.3 RAG Integration
+The RAG system enhances the generation process by:
 
-```typescript
-interface RAGConfig {
-  vectorStore: {
-    type: 'weaviate';
-    url: string;
-    apiKey: string;
-    className: string;
-  };
-  embedding: {
-    model: 'claude-3-sonnet-20240229';
-    dimensions: 1536;
-  };
-  retrieval: {
-    topK: 5;
-    minScore: 0.8;
-  };
-}
+1. Incorporating best practices and patterns from successful applications
+2. Validating generated blueprints against known working solutions
+3. Suggesting optimizations based on historical data
+4. Ensuring consistency with established standards
 
-class RAGService {
-  async enhancePrompt(prompt: string): Promise<string>;
-  async validateAgainstKnowledge(blueprint: Blueprint): Promise<ValidationResult>;
-  async suggestOptimizations(blueprint: Blueprint): Promise<Suggestion[]>;
-}
-```
+The system maintains a vector database of verified patterns and solutions, continuously updated with new successful generations.
 
 ## 2. Template System
 
-### 2.1 Template Engine Configuration
+The template system provides the foundation for consistent and maintainable code generation across all applications.
 
-```typescript
-interface TemplateEngine {
-  engine: 'handlebars';
-  version: '4.7.8';
-  config: {
-    strict: true;
-    noEscape: false;
-    preventIndent: true;
-  };
-}
+### 2.1 Template Engine
 
-interface TemplateHelpers {
-  [key: string]: HandlebarsTemplateDelegate;
-  formatCode: (code: string, language: string) => string;
-  importStatement: (module: string, items: string[]) => string;
-  wrapWithTryCatch: (code: string) => string;
-}
+The template engine uses Handlebars (v4.7.8) to:
 
-interface TemplatePartials {
-  [key: string]: {
-    content: string;
-    version: string;
-    dependencies: string[];
-  };
-}
-```
+1. Generate consistent code across different application components
+2. Apply standardized patterns and best practices
+3. Ensure maintainable and scalable code structure
+4. Support custom helpers for common code patterns
+
+Key features include:
+- Strict mode for error detection
+- Custom formatting helpers
+- Dependency management
+- Code optimization
 
 ### 2.2 Template Structure
 
-```typescript
-interface Template {
-  id: string;
-  version: string;
-  type: TemplateType;
-  content: string;
-  schema: JSONSchema;
-  dependencies: string[];
-  hooks: TemplateHooks;
-}
+Templates are organized hierarchically to support:
 
-enum TemplateType {
-  COMPONENT = 'component',
-  PAGE = 'page',
-  API = 'api',
-  CONFIG = 'config',
-  STYLE = 'style'
-}
+1. Component-level generation
+2. Page and layout generation
+3. API endpoint generation
+4. Configuration file generation
+5. Style and theme generation
 
-interface TemplateHooks {
-  beforeRender?: (data: unknown) => Promise<unknown>;
-  afterRender?: (content: string) => Promise<string>;
-  validate?: (content: string) => Promise<ValidationResult>;
-}
-```
+Each template includes:
+- Version control
+- Dependency tracking
+- Validation hooks
+- Documentation
 
 ## 3. Code Generation Pipeline
 

@@ -1,245 +1,98 @@
 # Core Architecture Specification
 
+## Overview
+
+This document outlines the fundamental architecture of the web application generator platform. It describes the core components, their interactions, and the technical standards that ensure the generation of high-quality, maintainable web applications.
+
 ## Technology Stack Specifications
 
 ### 1. Frontend Stack (Generated Applications)
 
-#### Next.js Application
-- **Framework**: Next.js 14.0.3
-- **Runtime**: Node.js 20.9.0 LTS
-- **Language**: TypeScript 5.2.2
-- **Key Dependencies**:
-  ```json
-  {
-    "dependencies": {
-      "next": "14.0.3",
-      "react": "18.2.0",
-      "react-dom": "18.2.0",
-      "typescript": "5.2.2",
-      "@tanstack/react-query": "5.8.4",
-      "@reduxjs/toolkit": "1.9.7",
-      "tailwindcss": "3.3.5",
-      "postcss": "8.4.31",
-      "autoprefixer": "10.4.16",
-      "zod": "3.22.4"
-    },
-    "devDependencies": {
-      "@types/react": "18.2.37",
-      "@types/node": "20.9.0",
-      "@typescript-eslint/eslint-plugin": "6.11.0",
-      "@typescript-eslint/parser": "6.11.0",
-      "eslint": "8.53.0",
-      "eslint-config-next": "14.0.3",
-      "prettier": "3.1.0",
-      "jest": "29.7.0",
-      "@testing-library/react": "14.1.0",
-      "@testing-library/jest-dom": "6.1.4"
-    }
-  }
-  ```
+The frontend stack is built on modern, battle-tested technologies that provide optimal performance and developer experience. 
 
-#### Core Frontend Interfaces
+#### Next.js Application Framework
 
-```typescript
-// Application Configuration
-interface AppConfig {
-  readonly APP_NAME: string;
-  readonly API_BASE_URL: string;
-  readonly AUTH_PROVIDER: 'jwt' | 'oauth2' | 'cognito';
-  readonly ENVIRONMENT: 'development' | 'staging' | 'production';
-  readonly FEATURE_FLAGS: Record<string, boolean>;
-}
+The application uses Next.js 14.0.3 as its foundation, providing:
+- Server-side rendering for optimal performance
+- Built-in routing and API capabilities
+- Automatic code splitting
+- Development optimization features
 
-// API Client Configuration
-interface ApiClientConfig {
-  baseURL: string;
-  timeout: number;
-  headers: Record<string, string>;
-  interceptors: {
-    request: RequestInterceptor[];
-    response: ResponseInterceptor[];
-  };
-}
-
-// State Management
-interface AppState {
-  auth: AuthState;
-  ui: UIState;
-  data: DataState;
-  errors: ErrorState;
-}
-
-// Core Component Props
-interface BaseComponentProps {
-  className?: string;
-  testId?: string;
-  children?: React.ReactNode;
-}
-```
+Key technical choices include:
+- **Runtime**: Node.js 20.9.0 LTS for stability and long-term support
+- **Language**: TypeScript 5.2.2 for type safety and improved developer experience
+- **State Management**: Combination of React Query for server state and Redux for complex client state
+- **Styling**: Tailwind CSS for rapid development and consistent design
 
 ### 2. Backend Stack (Generated Applications)
 
-#### Node.js Server
-- **Runtime**: Node.js 20.9.0 LTS
-- **Framework**: Express 4.18.2
-- **Key Dependencies**:
-  ```json
-  {
-    "dependencies": {
-      "express": "4.18.2",
-      "typescript": "5.2.2",
-      "@prisma/client": "5.5.2",
-      "jsonwebtoken": "9.0.2",
-      "bcryptjs": "2.4.3",
-      "zod": "3.22.4",
-      "winston": "3.11.0",
-      "cors": "2.8.5",
-      "helmet": "7.1.0",
-      "compression": "1.7.4"
-    },
-    "devDependencies": {
-      "@types/express": "4.17.21",
-      "@types/node": "20.9.0",
-      "prisma": "5.5.2",
-      "jest": "29.7.0",
-      "@types/jest": "29.5.8",
-      "supertest": "6.3.3",
-      "@types/supertest": "2.0.16"
-    }
-  }
-  ```
+The backend architecture is designed for scalability, security, and maintainability.
 
-#### Core Backend Interfaces
+#### Node.js Server Architecture
 
-```typescript
-// Server Configuration
-interface ServerConfig {
-  readonly PORT: number;
-  readonly NODE_ENV: 'development' | 'staging' | 'production';
-  readonly DATABASE_URL: string;
-  readonly JWT_SECRET: string;
-  readonly CORS_ORIGIN: string | string[];
-  readonly RATE_LIMIT: {
-    windowMs: number;
-    max: number;
-  };
-}
+The server infrastructure is built on:
+- **Runtime**: Node.js 20.9.0 LTS for consistent performance
+- **Framework**: Express 4.18.2 for robust routing and middleware support
+- **Database**: Prisma ORM for type-safe database operations
+- **Security**: Comprehensive security middleware stack
 
-// Middleware Configuration
-interface MiddlewareConfig {
-  cors: cors.CorsOptions;
-  helmet: helmet.HelmetOptions;
-  compression: compression.CompressionOptions;
-  rateLimit: rateLimit.Options;
-}
-
-// Error Handling
-interface AppError extends Error {
-  statusCode: number;
-  status: 'error' | 'fail';
-  isOperational: boolean;
-}
-
-// Database Models
-interface BaseModel {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
+Key features include:
+- Type-safe API endpoints
+- Automated validation
+- Structured error handling
+- Performance optimization
+- Security best practices
 
 ### 3. Generator Platform Stack
 
+The generator platform leverages advanced AI and automation technologies to create optimized applications.
+
 #### Core Generator Components
-- **Language**: TypeScript 5.2.2
-- **AI Integration**: Anthropic Claude API
-- **Vector Database**: Weaviate 1.21.3
-- **Key Dependencies**:
-  ```json
-  {
-    "dependencies": {
-      "@anthropic-ai/sdk": "0.17.1",
-      "weaviate-ts-client": "1.5.0",
-      "handlebars": "4.7.8",
-      "chalk": "5.3.0",
-      "commander": "11.1.0",
-      "inquirer": "9.2.12",
-      "ora": "7.0.1"
-    }
-  }
-  ```
 
-#### Generator Interfaces
+The platform is built with:
+- **Language**: TypeScript 5.2.2 for reliability and type safety
+- **AI Integration**: Claude 3.5 Sonnet for intelligent code generation
+- **Vector Database**: Weaviate 1.21.3 for pattern matching and optimization
+- **Template Engine**: Handlebars 4.7.8 for flexible code generation
 
-```typescript
-// Blueprint Configuration
-interface BlueprintConfig {
-  projectName: string;
-  description: string;
-  features: Feature[];
-  architecture: ArchitectureConfig;
-  deployment: DeploymentConfig;
-}
-
-// AI Model Configuration
-interface AIModelConfig {
-  provider: 'anthropic';
-  model: 'claude-3-sonnet-20240229';
-  temperature: number;
-  maxTokens: number;
-  topP: number;
-  frequencyPenalty: number;
-  presencePenalty: number;
-}
-
-// Template Engine Configuration
-interface TemplateConfig {
-  engine: 'handlebars';
-  helpers: Record<string, HandlebarsTemplateDelegate>;
-  partials: Record<string, string>;
-  hooks: {
-    beforeRender?: (template: string) => Promise<string>;
-    afterRender?: (result: string) => Promise<string>;
-  };
-}
-```
+Key capabilities include:
+1. Intelligent blueprint generation
+2. Code optimization and validation
+3. Pattern recognition and reuse
+4. Automated testing and documentation
 
 ## System Architecture
 
-### 1. Component Interaction Diagram
+The system follows a modular, event-driven architecture that ensures scalability and maintainability.
 
-```mermaid
-graph TD
-    A[User Input] --> B[Blueprint Generator]
-    B --> C[Template Engine]
-    C --> D[Code Generator]
-    D --> E[Build System]
-    E --> F[Output]
-    
-    G[AI Model] --> B
-    H[Vector DB] --> B
-    I[Template Store] --> C
-```
+### 1. Component Interaction
 
-### 2. Data Flow Specifications
+The platform uses a layered architecture where:
+1. User input is processed and validated
+2. AI models generate optimized blueprints
+3. Templates are selected and customized
+4. Code is generated and validated
+5. Applications are built and tested
 
-```typescript
-// Data Flow Interfaces
-interface DataFlow {
-  input: UserInput;
-  blueprint: Blueprint;
-  template: Template;
-  generatedCode: GeneratedCode;
-  buildOutput: BuildOutput;
-}
+Key interaction patterns include:
+- Event-driven communication
+- Asynchronous processing
+- Parallel execution where possible
+- Comprehensive error handling
 
-interface DataTransformation {
-  validateInput: (input: UserInput) => Promise<ValidationResult>;
-  generateBlueprint: (input: ValidatedInput) => Promise<Blueprint>;
-  renderTemplate: (blueprint: Blueprint) => Promise<GeneratedCode>;
-  build: (code: GeneratedCode) => Promise<BuildOutput>;
-}
-```
+### 2. Data Flow
+
+The data flow is designed to be:
+- Unidirectional for predictability
+- Type-safe for reliability
+- Optimized for performance
+- Monitored for issues
+
+Key data handling features:
+1. Input validation and sanitization
+2. State management and persistence
+3. Error recovery and logging
+4. Performance optimization
 
 ## Security Requirements
 
