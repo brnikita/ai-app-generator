@@ -2,34 +2,47 @@ version: '3.8'
 
 services:
   app:
+    container_name: ai-web-app-generator-app
     build:
       context: .
       target: development
-    container_name: ai-web-app-generator-app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/.next
     environment:
       - NODE_ENV=development
-      - NEXT_TELEMETRY_DISABLED=1
-    command: npm run dev
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', 'http://localhost:3000']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    stdin_open: true
+    tty: true
 
-  # Add more services as needed (e.g., database, cache, etc.)
-  # Example:
-  # db:
-  #   image: postgres:15-alpine
-  #   container_name: ai-web-app-generator-db
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=ai_web_app_generator
-  #   ports:
-  #     - "5432:5432"
-
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
+  # Add development services
+  tailwind:
+    build:
+      context: .
+      target: development
+    container_name: ai-web-app-generator-tailwind
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run tailwind:watch
+    restart: unless-stopped
+    depends_on:
+      - app
 
 # volumes:
-#   postgres_data: 
+#   postgres_data:
+
+volumes:
+  node_modules:
+  next:
