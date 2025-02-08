@@ -46,11 +46,24 @@ export class TemplateLoader {
   async loadAllTemplates(): Promise<Template[]> {
     const templates: Template[] = [];
     const entries = await readFile(join(this.templatesDir, 'index.json'), 'utf-8');
-    const templateList = z.array(z.string()).parse(JSON.parse(entries));
+    const templateList = z
+      .array(
+        z.object({
+          name: z.string(),
+          description: z.string(),
+          version: z.string(),
+          path: z.string(),
+          config: z.object({
+            dependencies: z.record(z.string()),
+            devDependencies: z.record(z.string()),
+          }),
+        })
+      )
+      .parse(JSON.parse(entries));
 
-    for (const name of templateList) {
-      const template = await this.loadTemplate(name);
-      templates.push(template);
+    for (const template of templateList) {
+      const loadedTemplate = await this.loadTemplate(template.path);
+      templates.push(loadedTemplate);
     }
 
     return templates;
@@ -61,7 +74,7 @@ export class TemplateLoader {
    */
   async loadTemplateFile(templateName: string, filePath: string): Promise<string> {
     const cacheKey = `${templateName}:${filePath}`;
-    
+
     // Check cache first
     const cached = this.fileCache.get(cacheKey);
     if (cached) {
@@ -71,7 +84,7 @@ export class TemplateLoader {
     // Load file content
     const fullPath = join(this.templatesDir, templateName, 'files', filePath);
     const content = await readFile(fullPath, 'utf-8');
-    
+
     // Cache content
     this.fileCache.set(cacheKey, content);
     return content;
@@ -111,4 +124,4 @@ export class TemplateLoader {
     const entries = await readFile(join(this.templatesDir, 'index.json'), 'utf-8');
     return z.array(z.string()).parse(JSON.parse(entries));
   }
-} 
+}
