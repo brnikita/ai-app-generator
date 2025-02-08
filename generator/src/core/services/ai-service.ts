@@ -69,7 +69,7 @@ export class AIService {
       4. Security considerations
     `;
 
-    return this.makeAIRequest(prompt);
+    return this.makeAIRequest('/api/messages', { prompt });
   }
 
   /**
@@ -96,7 +96,7 @@ export class AIService {
       5. Optimize performance
     `;
 
-    return this.makeAIRequest(prompt);
+    return this.makeAIRequest('/api/messages', { prompt });
   }
 
   /**
@@ -118,7 +118,7 @@ export class AIService {
       5. Follow best practices
     `;
 
-    return this.makeAIRequest(prompt);
+    return this.makeAIRequest('/api/messages', { prompt });
   }
 
   /**
@@ -141,7 +141,7 @@ export class AIService {
       6. Error handling
     `;
 
-    return this.makeAIRequest(prompt);
+    return this.makeAIRequest('/api/messages', { prompt });
   }
 
   /**
@@ -163,46 +163,31 @@ export class AIService {
       5. Integration points
     `;
 
-    return this.makeAIRequest(prompt);
+    return this.makeAIRequest('/api/messages', { prompt });
   }
 
   /**
    * Make a request to the AI API
    */
-  private async makeAIRequest(prompt: string): Promise<AIResponse> {
-    try {
-      const response = await fetch(`${this.baseUrl}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': this.apiKey,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model: 'claude-3-sonnet-20240229',
-          max_tokens: 4096,
-          messages: [
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-        }),
-      });
+  async makeAIRequest(endpoint: string, body: any): Promise<any> {
+    // If the endpoint is not an absolute URL, prepend the base URL
+    const baseUrl = process.env.AI_API_BASE_URL || 'http://localhost:3000';
+    const fullUrl = endpoint.startsWith('http') ? endpoint : new URL(endpoint, baseUrl).toString();
 
-      if (!response.ok) {
-        throw new Error(`AI API error: ${response.statusText}`);
-      }
+    console.log(`[AIService] Making AI request to: ${fullUrl}`);
 
-      const data = await response.json();
-      return AIResponseSchema.parse({
-        content: data.content[0].text,
-        suggestions: data.content[0].suggestions,
-        metadata: data.content[0].metadata,
-      });
-    } catch (error) {
-      console.error('AI request failed:', error);
+    const response = await fetch(fullUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('[AIService] AI request failed:', errorData);
       throw new Error('Failed to process AI request');
     }
+
+    return response.json();
   }
 }
