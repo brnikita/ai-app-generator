@@ -50,28 +50,28 @@ export type ProjectFeature =
 
 // Zod schemas
 export const FrontendSchema = z.object({
-  framework: z.enum(['react', 'vue', 'angular', 'svelte']),
-  styling: z.enum(['tailwind', 'styled-components', 'sass', 'css-modules']),
-  stateManagement: z.enum(['redux', 'mobx', 'recoil', 'zustand']).optional(),
+  framework: z.literal('react'),
+  styling: z.literal('tailwind'),
+  stateManagement: z.literal('redux'),
 });
 
 export const BackendSchema = z.object({
-  framework: z.enum(['express', 'nest', 'fastify', 'koa']),
-  database: z.enum(['mongodb', 'postgresql', 'mysql', 'sqlite']),
-  caching: z.enum(['redis', 'memcached']).optional(),
-  auth: z.enum(['jwt', 'oauth', 'session']).optional(),
+  framework: z.literal('express'),
+  database: z.literal('postgresql'),
+  caching: z.literal('redis'),
+  auth: z.literal('jwt'),
 });
 
 export const DeploymentSchema = z.object({
-  platform: z.enum(['vercel', 'netlify', 'aws', 'gcp', 'azure']),
-  containerization: z.enum(['docker', 'kubernetes']).optional(),
-  ci: z.enum(['github-actions', 'gitlab-ci', 'jenkins']).optional(),
+  platform: z.literal('aws'),
+  containerization: z.literal('docker'),
+  ci: z.literal('github-actions'),
 });
 
 export const TechStackSchema = z.object({
-  frontend: FrontendSchema.optional(),
-  backend: BackendSchema.optional(),
-  deployment: DeploymentSchema.optional(),
+  frontend: FrontendSchema,
+  backend: BackendSchema,
+  deployment: DeploymentSchema,
 });
 
 export const ProjectConfigSchema = z.object({

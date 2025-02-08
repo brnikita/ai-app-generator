@@ -31,6 +31,26 @@ export class PreviewService {
   }
 
   /**
+   * Generate project configuration from text description
+   */
+  async generateFromDescription(description: string): Promise<ProjectConfig> {
+    try {
+      const config = await this.aiService.generateProjectConfig(description);
+      
+      // Validate the generated config
+      const validation = await this.validateConfiguration(config);
+      if (!validation.isValid) {
+        throw new Error('Generated configuration is invalid: ' + JSON.stringify(validation.errors));
+      }
+
+      return config;
+    } catch (error) {
+      console.error('Failed to generate configuration:', error);
+      throw new Error('Failed to generate project configuration from description');
+    }
+  }
+
+  /**
    * Get initial preview state
    */
   private getInitialState(): PreviewState {
@@ -88,9 +108,23 @@ export class PreviewService {
       ProjectConfigSchema.parse(config);
 
       // Additional validation rules
-      await this.validateTechStackCompatibility(config, result);
-      await this.validateFeatureCompatibility(config, result);
-      await this.validateDeploymentConfiguration(config, result);
+      if (config.features?.includes('database') && !config.techStack?.backend?.database) {
+        result.errors['techStack.backend.database'] = [
+          'Database feature requires PostgreSQL database',
+        ];
+      }
+
+      if (config.features?.includes('authentication') && !config.techStack?.backend?.auth) {
+        result.errors['techStack.backend.auth'] = [
+          'Authentication feature requires JWT authentication',
+        ];
+      }
+
+      if (config.features?.includes('api') && !config.techStack?.backend?.framework) {
+        result.errors['techStack.backend.framework'] = [
+          'API feature requires Express.js backend',
+        ];
+      }
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -100,99 +134,6 @@ export class PreviewService {
     }
 
     return result;
-  }
-
-  /**
-   * Validate tech stack compatibility
-   */
-  private async validateTechStackCompatibility(
-    config: Partial<ProjectConfig>,
-    result: ValidationResult
-  ): Promise<void> {
-    const { techStack } = config;
-    if (!techStack) return;
-
-    // Frontend framework compatibility
-    if (techStack.frontend?.framework === 'next' && techStack.backend?.framework !== 'express') {
-      result.warnings['techStack.backend.framework'] = [
-        'Next.js works best with Express.js for API routes',
-      ];
-    }
-
-    // State management compatibility
-    if (
-      techStack.frontend?.stateManagement === 'redux' &&
-      !config.features?.includes('state-management')
-    ) {
-      result.warnings['features'] = [
-        'Redux is included but state-management feature is not enabled',
-      ];
-    }
-
-    // Database compatibility
-    if (techStack.backend?.database === 'postgresql' && !config.features?.includes('database')) {
-      result.warnings['features'] = [
-        ...(result.warnings['features'] || []),
-        'PostgreSQL is selected but database feature is not enabled',
-      ];
-    }
-  }
-
-  /**
-   * Validate feature compatibility
-   */
-  private async validateFeatureCompatibility(
-    config: Partial<ProjectConfig>,
-    result: ValidationResult
-  ): Promise<void> {
-    const { features } = config;
-    if (!features) return;
-
-    // Authentication dependencies
-    if (features.includes('authentication') && !config.techStack?.backend?.authentication) {
-      result.errors['techStack.backend.authentication'] = [
-        'Authentication feature requires an authentication method',
-      ];
-    }
-
-    // API dependencies
-    if (features.includes('api') && !config.techStack?.backend?.framework) {
-      result.errors['techStack.backend.framework'] = [
-        'API feature requires a backend framework',
-      ];
-    }
-
-    // Database dependencies
-    if (features.includes('database') && !config.techStack?.backend?.database) {
-      result.errors['techStack.backend.database'] = [
-        'Database feature requires a database selection',
-      ];
-    }
-  }
-
-  /**
-   * Validate deployment configuration
-   */
-  private async validateDeploymentConfiguration(
-    config: Partial<ProjectConfig>,
-    result: ValidationResult
-  ): Promise<void> {
-    const { deployment } = config.techStack || {};
-    if (!deployment) return;
-
-    // Kubernetes requirements
-    if (deployment.orchestration === 'kubernetes' && deployment.containerization !== 'docker') {
-      result.errors['techStack.deployment.containerization'] = [
-        'Kubernetes requires Docker containerization',
-      ];
-    }
-
-    // Cloud platform compatibility
-    if (deployment.platform === 'vercel' && config.type === 'full-stack') {
-      result.warnings['techStack.deployment.platform'] = [
-        'Vercel deployment works best with frontend-only applications',
-      ];
-    }
   }
 
   /**
@@ -261,21 +202,17 @@ export class PreviewService {
    * Get dependencies based on configuration
    */
   private getDependencies(config: ProjectConfig): Record<string, string> {
-    const deps: Record<string, string> = {
-      [config.techStack.frontend.framework]: '^14.0.0',
+    return {
+      'next': '^14.0.0',
       'react': '^18.2.0',
       'react-dom': '^18.2.0',
+      'tailwindcss': '^3.3.0',
+      '@reduxjs/toolkit': '^2.0.0',
+      'express': '^4.18.2',
+      'pg': '^8.11.0',
+      'redis': '^4.6.0',
+      'jsonwebtoken': '^9.0.0',
     };
-
-    if (config.techStack.frontend.styling === 'tailwind') {
-      deps['tailwindcss'] = '^3.3.0';
-    }
-
-    if (config.techStack.frontend.stateManagement === 'redux') {
-      deps['@reduxjs/toolkit'] = '^2.0.0';
-    }
-
-    return deps;
   }
 
   /**
@@ -284,7 +221,6 @@ export class PreviewService {
   private getConfiguration(config: ProjectConfig): Record<string, any> {
     return {
       name: config.name,
-      version: config.version,
       type: config.type,
       features: config.features,
       techStack: config.techStack,

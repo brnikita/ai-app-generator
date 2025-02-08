@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ProjectConfig } from '../models/project';
+import { ProjectConfig, ProjectConfigSchema } from '../models/project';
 import { Template } from '../models/template';
 
 // AI response schema
@@ -18,6 +18,79 @@ export class AIService {
   constructor(apiKey: string, baseUrl: string = 'https://api.anthropic.com/v1') {
     this.apiKey = apiKey;
     this.baseUrl = baseUrl;
+  }
+
+  /**
+   * Generate project configuration from text description
+   */
+  async generateProjectConfig(description: string): Promise<ProjectConfig> {
+    const prompt = `
+      Generate a CRM project configuration based on the following description:
+      ${description}
+
+      The configuration should include:
+      1. Project type and category
+      2. Required features
+      3. Project name and description
+      4. Tech stack (using our standardized stack):
+         - Frontend: Next.js, React, TypeScript, Tailwind CSS, Redux
+         - Backend: Node.js, Express, PostgreSQL, Redis
+         - Deployment: AWS, Docker, GitHub Actions
+
+      The response should be a valid JSON object matching this TypeScript interface:
+
+      interface ProjectConfig {
+        type: 'web-app' | 'api' | 'landing-page' | 'dashboard' | 'e-commerce';
+        category: 'web' | 'backend';
+        name: string;
+        description: string;
+        features: Array<
+          | 'authentication'
+          | 'authorization'
+          | 'database'
+          | 'api'
+          | 'file-upload'
+          | 'notifications'
+          | 'search'
+          | 'analytics'
+          | 'localization'
+          | 'payment'
+          | 'email'
+          | 'seo'
+          | 'testing'
+          | 'documentation'
+        >;
+        techStack: {
+          frontend: {
+            framework: 'react';
+            styling: 'tailwind';
+            stateManagement: 'redux';
+          };
+          backend: {
+            framework: 'express';
+            database: 'postgresql';
+            caching: 'redis';
+            auth: 'jwt';
+          };
+          deployment: {
+            platform: 'aws';
+            containerization: 'docker';
+            ci: 'github-actions';
+          };
+        };
+      }
+
+      Please ensure the response is a valid JSON object that exactly matches this interface.
+    `;
+
+    const response = await this.makeAIRequest(prompt);
+    try {
+      const config = JSON.parse(response.content);
+      return ProjectConfigSchema.parse(config);
+    } catch (error) {
+      console.error('Failed to parse AI response:', error);
+      throw new Error('Failed to generate valid project configuration');
+    }
   }
 
   /**
