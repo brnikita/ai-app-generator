@@ -1,5 +1,44 @@
 # Web Application Generator
 
+This project consists of two main components:
+1. Generator Platform - The application that creates web applications
+2. Generated Applications - The web applications produced by the generator
+
+## Project Structure
+
+```
+.
+├── docs/               # Project documentation
+├── generator/          # Generator platform source code
+├── generated/          # Generated applications templates and source
+├── specs/             # Technical specifications
+│   ├── generator/     # Generator platform specifications
+│   └── generated/     # Generated applications specifications
+└── tests/             # Test suites
+```
+
+## Specifications
+
+The complete technical specification for this project is organized hierarchically:
+
+1. [Master Technical Specification](MASTER_SPEC.md) - Root specification document
+2. [Generator Platform Specifications](specs/generator/README.md) - Generator platform details
+3. [Generated Applications Specifications](specs/generated/README.md) - Generated applications details
+
+## Getting Started
+
+[Coming soon]
+
+## Contributing
+
+[Coming soon]
+
+## License
+
+[Coming soon]
+
+# Web Application Generator
+
 A powerful platform that generates complete, production-ready web applications with minimal technical expertise required. The generator provides an intuitive, guided experience from project creation to deployment.
 
 ## Overview
