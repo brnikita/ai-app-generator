@@ -5,7 +5,7 @@ services:
     build:
       context: .
       target: production
-    container_name: ai-crm-app-prod
+    container_name: ai-web-app-generator-app-prod
     ports:
       - "3000:3000"
     environment:
@@ -23,7 +23,7 @@ services:
   # Example:
   # db:
   #   image: postgres:15-alpine
-  #   container_name: ai-crm-db-prod
+  #   container_name: ai-web-app-generator-db-prod
   #   environment:
   #     - POSTGRES_USER=${DB_USER}
   #     - POSTGRES_PASSWORD=${DB_PASSWORD}

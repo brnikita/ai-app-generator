@@ -123,7 +123,7 @@ export const createProject = (config: ProjectConfig): Project => {
     createdAt: new Date(),
     updatedAt: new Date(),
     version: '0.1.0',
-    generatedBy: 'ai-crm-generator',
+    generatedBy: 'ai-web-app-generator',
   };
 
   return {

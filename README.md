@@ -1,6 +1,6 @@
-# AI-CRM Generator
+# Web Application Generator
 
-A modern web application generator that creates customized CRM solutions using AI assistance.
+A modern web application generator that creates customized web applications using AI assistance.
 
 ## Prerequisites
 
@@ -15,9 +15,10 @@ A modern web application generator that creates customized CRM solutions using A
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ai-crm.git
-   cd ai-crm
+   git clone https://github.com/yourusername/ai-web-app-generator.git
+   cd ai-web-app-generator
    ```
+
 
 2. Create a `.env` file in the root directory:
    ```bash
@@ -154,8 +155,9 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=postgres
-DB_NAME=ai_crm
+DB_NAME=ai_web_app_generator
 ```
+
 
 ## Contributing
 

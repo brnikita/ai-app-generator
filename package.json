@@ -1,5 +1,5 @@
 {
-  "name": "ai-crm",
+  "name": "ai-web-app-generator",
   "version": "1.0.0",
   "description": "This project consists of two main components:\r 1. Generator Platform - The application that creates web applications\r 2. Generated Applications - The web applications produced by the generator",
   "main": "jest.config.js",

@@ -1,10 +1,11 @@
-# AI-CRM Generator Development Plan
+# AI-Web-App-Generator Development Plan
 
-This document outlines the step-by-step development process for the AI-CRM Generator platform, focusing on iterative development using AI assistance.
+This document outlines the step-by-step development process for the AI-Web-App-Generator platform, focusing on iterative development using AI assistance.
 
 ## Overview
 
 The development process is divided into 5 main iterations, each focusing on a specific aspect of the system. Each iteration builds upon the previous one, ensuring a systematic and organized development approach.
+
 
 ## Prerequisites
 

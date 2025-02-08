@@ -25,7 +25,7 @@ export class AIService {
    */
   async generateProjectConfig(description: string): Promise<ProjectConfig> {
     const prompt = `
-      Generate a CRM project configuration based on the following description:
+      Generate a web application project configuration based on the following description:
       ${description}
 
       The configuration should include:
