@@ -26,6 +26,7 @@ export const ProjectConfigSchema = z.object({
     }),
   }),
   features: z.array(z.string()),
+  configuration: z.record(z.string(), z.record(z.string(), z.any())).optional(),
 });
 
 // Project metadata schema
